@@ -6,36 +6,25 @@ const icons = { plane: Plane, clock: Clock, calendar: Calendar, 'map-pin': MapPi
 
 export default function TripTypeSelector({ selected, onSelect }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: 'auto' }}
-      transition={{ duration: 0.4, ease: 'easeOut' }}
-    >
-      <h3 className="text-lg font-semibold text-white mb-1">Tipo de viaje</h3>
-      <p className="text-sm text-white/50 mb-4">¿Qué necesitas?</p>
-      <div className="grid grid-cols-2 gap-3">
+    <div>
+      <h3 className="step-card__title">Tipo de viaje</h3>
+      <p className="step-card__subtitle">¿Qué necesitas?</p>
+      <div className="option-grid">
         {TRIP_TYPES.map((type) => {
           const Icon = icons[type.icon];
-          const isSelected = selected === type.id;
           return (
-            <motion.button
+            <button
               key={type.id}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
+              className={`option-btn ${selected === type.id ? 'active' : ''}`}
               onClick={() => onSelect(type.id)}
-              className={`p-4 rounded-2xl border-2 transition-all duration-300 text-left cursor-pointer ${
-                isSelected
-                  ? 'border-[#C9A84C] bg-[#C9A84C]/10'
-                  : 'border-white/10 bg-white/5 hover:border-white/20'
-              }`}
             >
-              <Icon className={`w-5 h-5 mb-2 ${isSelected ? 'text-[#C9A84C]' : 'text-white/60'}`} />
-              <div className={`font-semibold text-sm ${isSelected ? 'text-white' : 'text-white/80'}`}>{type.label}</div>
-              <div className="text-xs text-white/40 mt-0.5">{type.description}</div>
-            </motion.button>
+              <Icon />
+              <div className="option-btn__label">{type.label}</div>
+              <div className="option-btn__desc">{type.description}</div>
+            </button>
           );
         })}
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -17,58 +17,40 @@ const images = [
 
 export default function VehicleShowcase() {
   return (
-    <section className="py-16 sm:py-24 px-5 sm:px-6">
-      <div className="max-w-5xl mx-auto">
-
-        {/* Section header */}
-        <div className="text-center mb-10 sm:mb-14">
-          <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">
-            Cadillac Escalade <span className="text-[#C9A84C]">2016</span>
+    <section className="section">
+      <div className="container">
+        <div className="section__header">
+          <h2 className="section__title">
+            Cadillac Escalade <span className="gold">2016</span>
           </h2>
-          <p className="mt-3 text-sm sm:text-base text-white/40 max-w-md mx-auto leading-relaxed">
+          <p className="section__subtitle">
             El ícono del lujo americano. Presencia imponente, confort insuperable.
           </p>
         </div>
 
-        {/* Image gallery */}
-        <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-5 px-5 sm:-mx-6 sm:px-6">
+        <div className="showcase__gallery">
           {images.map((img, i) => (
-            <div
-              key={i}
-              className="flex-shrink-0 w-[280px] sm:w-80 snap-center"
-            >
-              <img
-                src={img}
-                alt={`Escalade ${i + 1}`}
-                className="w-full h-44 sm:h-56 object-cover rounded-2xl"
-              />
+            <div key={i} className="showcase__gallery-item">
+              <img src={img} alt={`Escalade ${i + 1}`} />
             </div>
           ))}
         </div>
 
-        {/* Specs grid */}
-        <div className="grid grid-cols-3 gap-3 sm:gap-4 mt-10 sm:mt-14">
+        <div className="specs-grid">
           {specs.map(({ icon: Icon, label, value }) => (
-            <div
-              key={label}
-              className="bg-white/[0.03] border border-white/[0.05] rounded-2xl p-4 sm:p-5 text-center"
-            >
-              <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#C9A84C] mx-auto mb-2.5" />
-              <div className="text-white font-semibold text-xs sm:text-sm">{value}</div>
-              <div className="text-white/30 text-[10px] sm:text-xs mt-1">{label}</div>
+            <div key={label} className="spec-card">
+              <Icon />
+              <div className="spec-card__value">{value}</div>
+              <div className="spec-card__label">{label}</div>
             </div>
           ))}
         </div>
 
-        {/* Trust badges */}
-        <div className="flex flex-wrap justify-center gap-3 mt-10 sm:mt-12">
+        <div className="trust-badges">
           {['Mantenimiento certificado', 'Vehículos impecables', 'Seguro incluido'].map((badge) => (
-            <div
-              key={badge}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#C9A84C]/[0.07] border border-[#C9A84C]/15"
-            >
-              <Shield className="w-3.5 h-3.5 text-[#C9A84C]" />
-              <span className="text-[11px] sm:text-xs text-[#C9A84C]/80 font-medium">{badge}</span>
+            <div key={badge} className="trust-badge">
+              <Shield />
+              <span>{badge}</span>
             </div>
           ))}
         </div>

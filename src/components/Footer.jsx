@@ -2,54 +2,43 @@ import { MapPin, Phone, Mail, AtSign } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="py-12 sm:py-16 px-5 sm:px-6 border-t border-white/[0.06]">
-      <div className="max-w-5xl mx-auto">
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-10">
-          {/* Brand */}
-          <div className="col-span-2 sm:col-span-1">
-            <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
-              Best Luxury<span className="text-[#C9A84C]"> Transportation</span>
-            </h3>
-            <p className="text-xs sm:text-sm text-white/40 leading-relaxed">
-              Servicio exclusivo de transporte de lujo con Cadillac Escalade en Venezuela.
-            </p>
-          </div>
-
-          {/* Coverage */}
-          <div>
-            <h4 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-4">Cobertura</h4>
-            <div className="space-y-2.5">
-              {['Caracas', 'Valencia', 'Maracaibo', 'Margarita', 'Mérida', 'Puerto La Cruz'].map(city => (
-                <div key={city} className="flex items-center gap-2 text-sm text-white/40">
-                  <MapPin className="w-3 h-3 text-[#C9A84C]" />
-                  {city}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h4 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-4">Contacto</h4>
-            <div className="space-y-3">
-              <a href="tel:+584121234567" className="flex items-center gap-2 text-sm text-white/40 hover:text-[#C9A84C] transition-colors">
-                <Phone className="w-3 h-3" />
-                +58 412 123 4567
-              </a>
-              <a href="mailto:info@bestluxury.ve" className="flex items-center gap-2 text-sm text-white/40 hover:text-[#C9A84C] transition-colors">
-                <Mail className="w-3 h-3" />
-                info@bestluxury.ve
-              </a>
-              <a href="#" className="flex items-center gap-2 text-sm text-white/40 hover:text-[#C9A84C] transition-colors">
-                <AtSign className="w-3 h-3" />
-                @bestluxuryvzla
-              </a>
-            </div>
-          </div>
+    <footer className="footer">
+      <div className="footer__inner">
+        <div className="footer__brand">
+          <div className="footer__brand-name">Best Luxury <span>Transportation</span></div>
+          <p className="footer__brand-desc">
+            Servicio exclusivo de transporte de lujo con Cadillac Escalade en Venezuela.
+          </p>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-white/[0.06] text-center">
-          <p className="text-xs text-white/20">
+        <div>
+          <h4 className="footer__heading">Cobertura</h4>
+          <ul className="footer__list">
+            {['Caracas', 'Valencia', 'Maracaibo', 'Margarita', 'Mérida', 'Puerto La Cruz'].map(city => (
+              <li key={city} className="footer__list-item">
+                <MapPin /> {city}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="footer__heading">Contacto</h4>
+          <ul className="footer__list">
+            <li>
+              <a href="tel:+584121234567" className="footer__link"><Phone /> +58 412 123 4567</a>
+            </li>
+            <li>
+              <a href="mailto:info@bestluxury.ve" className="footer__link"><Mail /> info@bestluxury.ve</a>
+            </li>
+            <li>
+              <a href="#" className="footer__link"><AtSign /> @bestluxuryvzla</a>
+            </li>
+          </ul>
+        </div>
+
+        <div className="footer__bottom">
+          <p className="footer__copy">
             © {new Date().getFullYear()} Best Luxury Transportation. Todos los derechos reservados.
           </p>
         </div>

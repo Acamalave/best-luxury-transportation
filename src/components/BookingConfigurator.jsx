@@ -6,7 +6,7 @@ import ExtrasSelector from './ExtrasSelector';
 import PriceSummary from './PriceSummary';
 import { RotateCcw } from 'lucide-react';
 
-const stepVariants = {
+const variants = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
   exit: { opacity: 0, y: -8, transition: { duration: 0.2 } },
@@ -15,140 +15,84 @@ const stepVariants = {
 export default function BookingConfigurator({ bookingState }) {
   const { booking, price, days, currentStep, isComplete, updateBooking, toggleExtra, reset } = bookingState;
 
-  const showConfigurator = booking.serviceType || booking.date;
-
   return (
-    <section id="booking" className="relative py-14 sm:py-20 px-5 sm:px-6">
-      <div className="max-w-5xl mx-auto">
+    <section id="booking" className="configurator">
+      <div className="configurator__inner">
 
-        {/* Progress bar */}
-        {showConfigurator && (
-          <div className="flex gap-1.5 mb-8 max-w-lg mx-auto lg:mx-0 lg:max-w-none">
+        {(booking.serviceType || booking.date) && (
+          <div className="configurator__progress">
             {[1, 2, 3, 4, 5].map(step => (
-              <div
-                key={step}
-                className={`h-0.5 flex-1 rounded-full transition-all duration-500 ${
-                  step <= currentStep ? 'bg-[#C9A84C]' : 'bg-white/[0.06]'
-                }`}
-              />
+              <div key={step} className={`configurator__progress-bar ${step <= currentStep ? 'active' : ''}`} />
             ))}
           </div>
         )}
 
-        <div className="lg:grid lg:grid-cols-5 lg:gap-8">
-          {/* Configurator steps */}
-          <div className="lg:col-span-3 space-y-5">
+        <div className="configurator__layout">
+          <div className="configurator__steps">
 
-            {/* Trip Type — shows after service type selected */}
             <AnimatePresence>
               {booking.serviceType && (
-                <motion.div
-                  key="trip"
-                  variants={stepVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  className="bg-white/[0.03] rounded-2xl p-5 sm:p-6 border border-white/[0.05]"
-                >
-                  <TripTypeSelector
-                    selected={booking.tripType}
-                    onSelect={(v) => updateBooking('tripType', v)}
-                  />
+                <motion.div key="trip" variants={variants} initial="hidden" animate="visible" exit="exit">
+                  <div className="step-card">
+                    <TripTypeSelector selected={booking.tripType} onSelect={(v) => updateBooking('tripType', v)} />
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Date/Time or Route */}
             <AnimatePresence>
               {booking.tripType && (
-                <motion.div
-                  key="datetime"
-                  variants={stepVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  className="bg-white/[0.03] rounded-2xl p-5 sm:p-6 border border-white/[0.05]"
-                >
-                  <DateTimePicker booking={booking} updateBooking={updateBooking} />
+                <motion.div key="datetime" variants={variants} initial="hidden" animate="visible" exit="exit">
+                  <div className="step-card">
+                    <DateTimePicker booking={booking} updateBooking={updateBooking} />
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Location (not for intercity) */}
             <AnimatePresence>
               {booking.tripType && booking.tripType !== 'interurbano' && (
                 (booking.tripType === 'por-dias' ? (booking.dateRange.from && booking.dateRange.to) : booking.date) ||
                 booking.tripType === 'por-horas'
               ) && (
-                <motion.div
-                  key="location"
-                  variants={stepVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  className="bg-white/[0.03] rounded-2xl p-5 sm:p-6 border border-white/[0.05]"
-                >
-                  <LocationPicker booking={booking} updateBooking={updateBooking} />
+                <motion.div key="location" variants={variants} initial="hidden" animate="visible" exit="exit">
+                  <div className="step-card">
+                    <LocationPicker booking={booking} updateBooking={updateBooking} />
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Extras */}
             <AnimatePresence>
               {(currentStep >= 5 || (booking.tripType === 'interurbano' && booking.route)) && (
-                <motion.div
-                  key="extras"
-                  variants={stepVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  className="bg-white/[0.03] rounded-2xl p-5 sm:p-6 border border-white/[0.05]"
-                >
-                  <ExtrasSelector booking={booking} toggleExtra={toggleExtra} />
+                <motion.div key="extras" variants={variants} initial="hidden" animate="visible" exit="exit">
+                  <div className="step-card">
+                    <ExtrasSelector booking={booking} toggleExtra={toggleExtra} />
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Reset */}
             {booking.serviceType && (
-              <motion.button
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                onClick={reset}
-                className="flex items-center gap-1.5 text-xs text-white/20 hover:text-white/50 transition-colors mx-auto cursor-pointer mt-2"
-              >
-                <RotateCcw className="w-3 h-3" />
-                Empezar de nuevo
-              </motion.button>
+              <div style={{ textAlign: 'center', marginTop: 8 }}>
+                <button className="btn btn--ghost" onClick={reset}>
+                  <RotateCcw size={12} /> Empezar de nuevo
+                </button>
+              </div>
             )}
 
-            {/* Spacer for mobile fixed bottom bar */}
-            {price.total > 0 && <div className="h-28 lg:hidden" />}
+            {price.total > 0 && <div className="mobile-spacer" />}
           </div>
 
-          {/* Desktop sidebar price */}
-          <div className="hidden lg:block lg:col-span-2">
-            <div className="sticky top-6">
-              {price.total > 0 && (
-                <PriceSummary
-                  booking={booking}
-                  price={price}
-                  days={days}
-                  isComplete={isComplete}
-                />
-              )}
-            </div>
+          <div className="desktop-sidebar">
+            {price.total > 0 && (
+              <PriceSummary booking={booking} price={price} days={days} isComplete={isComplete} />
+            )}
           </div>
         </div>
 
-        {/* Mobile fixed bottom price */}
-        <div className="lg:hidden">
-          <PriceSummary
-            booking={booking}
-            price={price}
-            days={days}
-            isComplete={isComplete}
-          />
+        <div className="mobile-only">
+          <PriceSummary booking={booking} price={price} days={days} isComplete={isComplete} />
         </div>
       </div>
     </section>

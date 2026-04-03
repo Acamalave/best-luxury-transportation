@@ -6,28 +6,18 @@ import Footer from './components/Footer';
 import WhatsAppButton from './components/WhatsAppButton';
 import { useBooking } from './hooks/useBooking';
 
-function SectionDivider() {
-  return (
-    <div className="py-4 sm:py-6 px-5 sm:px-6">
-      <div className="max-w-xs mx-auto">
-        <div className="border-t border-white/[0.06]" />
-      </div>
-    </div>
-  );
-}
-
 function App() {
   const bookingState = useBooking();
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
+    <div className="app">
       <Hero bookingState={bookingState} />
       <BookingConfigurator bookingState={bookingState} />
-      <SectionDivider />
+      <hr className="section-divider" />
       <VehicleShowcase />
-      <SectionDivider />
+      <hr className="section-divider" />
       <WhyChooseUs />
-      <SectionDivider />
+      <hr className="section-divider" />
       <Footer />
       <WhatsAppButton />
     </div>
