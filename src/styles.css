@@ -254,6 +254,14 @@ input { font-family: inherit; }
   -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 60%, transparent 90%);
 }
 
+/* Particles */
+.particles-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
 /* Hero content — wizard layout */
 .hero__content--wizard {
   position: relative;

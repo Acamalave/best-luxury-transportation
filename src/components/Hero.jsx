@@ -1,14 +1,17 @@
 import { motion } from 'framer-motion';
 import StepWizard from './StepWizard';
 import { RegionPill } from './RegionSelector';
+import Particles from './Particles';
 
 export default function Hero({ bookingState }) {
   return (
     <section className="hero">
       <div className="hero__bg">
-        <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920&q=80" alt="Mountains" />
+        <img src="/hero-vzla.jpg" alt="Cadillac Escalade en Caracas" />
         <div className="hero__bg-overlay" />
       </div>
+
+      <Particles />
 
       <div className="hero__content hero__content--wizard">
         <motion.div className="hero__branding hero__branding--compact" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
