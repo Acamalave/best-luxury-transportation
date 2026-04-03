@@ -2,15 +2,15 @@ import { MapPin, Phone, Mail, AtSign } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="py-12 px-4 border-t border-white/[0.06]">
+    <footer className="py-8 sm:py-12 px-4 border-t border-white/[0.06]">
       <div className="max-w-5xl mx-auto">
-        <div className="grid sm:grid-cols-3 gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8">
           {/* Brand */}
-          <div>
-            <h3 className="text-lg font-bold text-white mb-2">
+          <div className="col-span-2 sm:col-span-1">
+            <h3 className="text-base sm:text-lg font-bold text-white mb-1.5">
               Best Luxury<span className="text-[#C9A84C]"> Transportation</span>
             </h3>
-            <p className="text-sm text-white/40 leading-relaxed">
+            <p className="text-xs sm:text-sm text-white/40 leading-relaxed">
               Servicio exclusivo de transporte de lujo con Cadillac Escalade en Venezuela.
             </p>
           </div>
