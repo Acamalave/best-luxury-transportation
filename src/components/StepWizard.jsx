@@ -30,7 +30,7 @@ function buildWhatsAppMessage(booking, price, days, contact, locations, routes) 
   let lines = [
     '🚘 *RESERVA - Best Luxury Transportation*', '',
     `👤 *Cliente:* ${contact.name}`,
-    `📞 *Teléfono:* ${contact.phone}`,
+    `📞 *Teléfono:* ${contact.countryCode} ${contact.phone}`,
     `📧 *Email:* ${contact.email}`, '',
     `📋 *Servicio:* ${service?.label}`,
     `🗺️ *Tipo:* ${trip?.label}`,
@@ -73,7 +73,7 @@ const STEP_META = [
 export default function StepWizard({ bookingState }) {
   const { booking, price, days, updateBooking, toggleExtra, reset, wizardStep, totalSteps: _, nextStep, prevStep, goToStep } = bookingState;
   const { regionData } = useRegion();
-  const [contact, setContact] = useState({ name: '', phone: '', email: '' });
+  const [contact, setContact] = useState({ name: '', phone: '', email: '', countryCode: '+58' });
   const [card, setCard] = useState({ number: '', expiry: '', cvv: '', holder: '' });
 
   const LOCATIONS = regionData?.locations || [];
@@ -290,15 +290,47 @@ export default function StepWizard({ bookingState }) {
             {/* Step 5: Summary */}
             {step === 5 && (
               <div className="wizard__summary">
-                <div className="wizard__summary-row"><span>Servicio</span><strong>{SERVICE_TYPES.find(s => s.id === booking.serviceType)?.label}</strong></div>
-                <div className="wizard__summary-row"><span>Tipo</span><strong>{TRIP_TYPES.find(t => t.id === booking.tripType)?.label}</strong></div>
-                {booking.date && <div className="wizard__summary-row"><span>Fecha</span><strong>{format(booking.date, "d MMM yyyy", { locale: es })}</strong></div>}
-                {booking.tripType === 'por-dias' && booking.dateRange.from && (
-                  <div className="wizard__summary-row"><span>Período</span><strong>{format(booking.dateRange.from, 'd MMM', { locale: es })} → {booking.dateRange.to && format(booking.dateRange.to, 'd MMM', { locale: es })}</strong></div>
+                <div className="wizard__summary-row">
+                  <span>Servicio</span>
+                  <strong>{SERVICE_TYPES.find(s => s.id === booking.serviceType)?.label}</strong>
+                </div>
+                <div className="wizard__summary-row">
+                  <span>Tipo</span>
+                  <strong>{TRIP_TYPES.find(t => t.id === booking.tripType)?.label}</strong>
+                </div>
+                {booking.date && (
+                  <div className="wizard__summary-row">
+                    <span>Fecha</span>
+                    <strong>{format(booking.date, "d MMM yyyy", { locale: es })}</strong>
+                  </div>
                 )}
-                <div className="wizard__summary-row"><span>Hora</span><strong>{booking.time}</strong></div>
-                {booking.location && <div className="wizard__summary-row"><span>Recogida</span><strong>{LOCATIONS.find(l => l.id === booking.location)?.label}</strong></div>}
-                {booking.selectedExtras.length > 0 && <div className="wizard__summary-row"><span>Extras</span><strong>{booking.selectedExtras.map(e => e.label).join(', ')}</strong></div>}
+                {booking.tripType === 'por-dias' && booking.dateRange.from && (
+                  <div className="wizard__summary-row">
+                    <span>Período</span>
+                    <strong>{format(booking.dateRange.from, 'd MMM', { locale: es })} → {booking.dateRange.to && format(booking.dateRange.to, 'd MMM', { locale: es })}</strong>
+                  </div>
+                )}
+                <div className="wizard__summary-row">
+                  <span>Hora</span>
+                  <strong>{booking.time}</strong>
+                </div>
+                {booking.location && (
+                  <div className="wizard__summary-row">
+                    <span>Recogida</span>
+                    <strong className="wizard__summary-value">{LOCATIONS.find(l => l.id === booking.location)?.label}</strong>
+                  </div>
+                )}
+                {booking.selectedExtras.length > 0 && (
+                  <div className="wizard__summary-extras">
+                    <span className="wizard__summary-extras-label">Extras</span>
+                    {booking.selectedExtras.map(e => (
+                      <div key={e.id} className="wizard__summary-extra-item">
+                        <span>{e.label} <small>(${e.price}{e.perDay ? '/día' : ''})</small></span>
+                        <button className="wizard__summary-extra-remove" onClick={() => toggleExtra(e)}>✕</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <div className="wizard__summary-total">
                   <span className="wizard__summary-total-label">Total estimado</span>
                   <span className="wizard__summary-total-value">${price.total} <small>USD</small></span>
@@ -316,7 +348,29 @@ export default function StepWizard({ bookingState }) {
                 </div>
                 <div className="wizard__form-field">
                   <label><Phone size={14} /> Teléfono</label>
-                  <input type="tel" placeholder="+58 412 000 0000" value={contact.phone} onChange={(e) => setContact(p => ({ ...p, phone: e.target.value }))} />
+                  <div className="wizard__phone-row">
+                    <select
+                      className="wizard__country-code"
+                      value={contact.countryCode}
+                      onChange={(e) => setContact(p => ({ ...p, countryCode: e.target.value }))}
+                    >
+                      <option value="+58">🇻🇪 +58</option>
+                      <option value="+1">🇺🇸 +1</option>
+                      <option value="+57">🇨🇴 +57</option>
+                      <option value="+34">🇪🇸 +34</option>
+                      <option value="+55">🇧🇷 +55</option>
+                      <option value="+52">🇲🇽 +52</option>
+                      <option value="+507">🇵🇦 +507</option>
+                      <option value="+593">🇪🇨 +593</option>
+                      <option value="+56">🇨🇱 +56</option>
+                      <option value="+54">🇦🇷 +54</option>
+                      <option value="+51">🇵🇪 +51</option>
+                      <option value="+44">🇬🇧 +44</option>
+                      <option value="+39">🇮🇹 +39</option>
+                      <option value="+351">🇵🇹 +351</option>
+                    </select>
+                    <input type="tel" placeholder="412 000 0000" value={contact.phone} onChange={(e) => setContact(p => ({ ...p, phone: e.target.value }))} />
+                  </div>
                 </div>
                 <div className="wizard__form-field">
                   <label><Mail size={14} /> Correo electrónico</label>

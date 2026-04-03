@@ -62,9 +62,9 @@ export const INTERCITY_ROUTES = [
 ];
 
 export const BASE_PRICES = {
-  aeropuerto: { 'con-chofer': 80, 'sin-chofer': 60 },
-  'por-horas': { 'con-chofer': 35, 'sin-chofer': 25 },
-  'por-dias': { 'con-chofer': 200, 'sin-chofer': 150 },
+  aeropuerto: { 'con-chofer': 120, 'sin-chofer': 85 },
+  'por-horas': { 'con-chofer': 50, 'sin-chofer': 35 },
+  'por-dias': { 'con-chofer': 280, 'sin-chofer': 200 },
 };
 
 export const DISCOUNTS = {
