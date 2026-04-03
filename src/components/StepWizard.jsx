@@ -232,7 +232,7 @@ export default function StepWizard({ bookingState }) {
                           <span className="hours-slider__label">Duración</span>
                           <span className="hours-slider__value">{booking.hours}h</span>
                         </div>
-                        <input type="range" min={4} max={12} value={booking.hours} onChange={(e) => updateBooking('hours', parseInt(e.target.value))} />
+                        <input type="range" min={4} max={12} value={booking.hours} onChange={(e) => updateBooking('hours', parseInt(e.target.value))} style={{ '--range-progress': `${((booking.hours - 4) / 8) * 100}%` }} />
                         <div className="hours-slider__range"><span>4h mín</span><span>12h máx</span></div>
                       </div>
                     )}
