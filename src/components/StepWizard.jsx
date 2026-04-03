@@ -8,9 +8,9 @@ import {
   Wine, Wifi, Shield, Languages, Sparkles, Baby,
   ChevronLeft, ChevronRight, RotateCcw, Check, CreditCard, User, Phone, Mail
 } from 'lucide-react';
-import { SERVICE_TYPES, TRIP_TYPES, INTERCITY_ROUTES } from '../data/pricing';
-import { LOCATIONS } from '../data/locations';
+import { SERVICE_TYPES, TRIP_TYPES } from '../data/pricing';
 import { EXTRAS } from '../data/extras';
+import { useRegion } from '../hooks/useRegion';
 
 const tripIcons = { plane: Plane, clock: Clock, calendar: CalendarDays, 'map-pin': MapPin };
 const extraIcons = { wine: Wine, wifi: Wifi, shield: Shield, languages: Languages, sparkles: Sparkles, baby: Baby };
@@ -23,10 +23,10 @@ const stepAnim = {
   exit: { opacity: 0, x: -40, transition: { duration: 0.2 } },
 };
 
-function buildWhatsAppMessage(booking, price, days, contact) {
+function buildWhatsAppMessage(booking, price, days, contact, locations, routes) {
   const service = SERVICE_TYPES.find(s => s.id === booking.serviceType);
   const trip = TRIP_TYPES.find(t => t.id === booking.tripType);
-  const location = LOCATIONS.find(l => l.id === booking.location);
+  const location = locations.find(l => l.id === booking.location);
   let lines = [
     '🚘 *RESERVA - Best Luxury Transportation*', '',
     `👤 *Cliente:* ${contact.name}`,
@@ -36,7 +36,7 @@ function buildWhatsAppMessage(booking, price, days, contact) {
     `🗺️ *Tipo:* ${trip?.label}`,
   ];
   if (booking.tripType === 'interurbano' && booking.route) {
-    const route = INTERCITY_ROUTES.find(r => r.id === booking.route);
+    const route = routes.find(r => r.id === booking.route);
     lines.push(`📍 *Ruta:* ${route?.from} → ${route?.to}`);
   }
   if (booking.tripType === 'por-dias' && booking.dateRange.from && booking.dateRange.to) {
@@ -72,8 +72,13 @@ const STEP_META = [
 
 export default function StepWizard({ bookingState }) {
   const { booking, price, days, updateBooking, toggleExtra, reset, wizardStep, totalSteps: _, nextStep, prevStep, goToStep } = bookingState;
+  const { regionData } = useRegion();
   const [contact, setContact] = useState({ name: '', phone: '', email: '' });
   const [card, setCard] = useState({ number: '', expiry: '', cvv: '', holder: '' });
+
+  const LOCATIONS = regionData?.locations || [];
+  const INTERCITY_ROUTES = regionData?.intercityRoutes || [];
+  const WHATSAPP_NUMBER_REGION = regionData?.whatsapp || WHATSAPP_NUMBER;
 
   const step = wizardStep;
   const meta = STEP_META[step] || STEP_META[0];
@@ -102,8 +107,8 @@ export default function StepWizard({ bookingState }) {
   const handleNext = () => {
     if (step === 7) {
       // Fake payment — send WhatsApp
-      const msg = buildWhatsAppMessage(booking, price, days, contact);
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+      const msg = buildWhatsAppMessage(booking, price, days, contact, LOCATIONS, INTERCITY_ROUTES);
+      window.open(`https://wa.me/${WHATSAPP_NUMBER_REGION}?text=${msg}`, '_blank');
       return;
     }
     nextStep();

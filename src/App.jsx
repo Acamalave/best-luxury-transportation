@@ -3,10 +3,15 @@ import VehicleShowcase from './components/VehicleShowcase';
 import WhyChooseUs from './components/WhyChooseUs';
 import Footer from './components/Footer';
 import WhatsAppButton from './components/WhatsAppButton';
+import { RegionOverlay } from './components/RegionSelector';
+import { RegionProvider, useRegion } from './hooks/useRegion';
 import { useBooking } from './hooks/useBooking';
 
-function App() {
-  const bookingState = useBooking();
+function AppContent() {
+  const { hasSelected, regionData } = useRegion();
+  const bookingState = useBooking(regionData);
+
+  if (!hasSelected) return <RegionOverlay />;
 
   return (
     <div className="app">
@@ -19,6 +24,14 @@ function App() {
       <Footer />
       <WhatsAppButton />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <RegionProvider>
+      <AppContent />
+    </RegionProvider>
   );
 }
 

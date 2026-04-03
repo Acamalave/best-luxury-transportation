@@ -1,4 +1,5 @@
 import { Fuel, Users, Volume2, Shield, Gauge, Snowflake } from 'lucide-react';
+import { useRegion } from '../hooks/useRegion';
 
 const specs = [
   { icon: Fuel, label: 'Motor', value: '6.2L V8' },
@@ -10,21 +11,23 @@ const specs = [
 ];
 
 export default function VehicleShowcase() {
+  const { regionData } = useRegion();
+  const vehicle = regionData?.vehicle;
+
   return (
     <section className="section">
       <div className="container">
         <div className="section__header">
           <h2 className="section__title">
-            Cadillac <span className="gold">Escalade</span>
+            {vehicle?.name || 'Cadillac Escalade'}
           </h2>
           <p className="section__subtitle">
             El ícono del lujo americano. Presencia imponente, confort insuperable.
           </p>
         </div>
 
-        {/* Vehicle image */}
         <div className="showcase__hero-img">
-          <img src="/escalade-cutout.png" alt="Cadillac Escalade" />
+          <img src={vehicle?.image || '/escalade-cutout.png'} alt={vehicle?.name} />
         </div>
 
         <div className="specs-grid">

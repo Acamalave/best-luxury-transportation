@@ -15,9 +15,9 @@ const initialState = {
   selectedExtras: [],
 };
 
-export function useBooking() {
+export function useBooking(regionData) {
   const [booking, setBooking] = useState(initialState);
-  const [wizardStep, setWizardStep] = useState(0); // 0-indexed wizard step
+  const [wizardStep, setWizardStep] = useState(0);
 
   const days = useMemo(() => {
     if (booking.tripType === 'por-dias' && booking.dateRange.from && booking.dateRange.to) {
@@ -27,15 +27,19 @@ export function useBooking() {
   }, [booking.tripType, booking.dateRange]);
 
   const price = useMemo(() => {
-    return calculatePrice({
-      serviceType: booking.serviceType,
-      tripType: booking.tripType,
-      hours: booking.hours,
-      days,
-      route: booking.route,
-      extras: booking.selectedExtras,
-    });
-  }, [booking.serviceType, booking.tripType, booking.hours, days, booking.route, booking.selectedExtras]);
+    return calculatePrice(
+      {
+        serviceType: booking.serviceType,
+        tripType: booking.tripType,
+        hours: booking.hours,
+        days,
+        route: booking.route,
+        extras: booking.selectedExtras,
+      },
+      regionData?.pricing,
+      regionData?.intercityRoutes
+    );
+  }, [booking.serviceType, booking.tripType, booking.hours, days, booking.route, booking.selectedExtras, regionData]);
 
   const updateBooking = useCallback((field, value) => {
     setBooking(prev => {

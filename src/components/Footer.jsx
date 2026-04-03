@@ -1,20 +1,24 @@
 import { MapPin, Phone, Mail, AtSign } from 'lucide-react';
+import { useRegion } from '../hooks/useRegion';
 
 export default function Footer() {
+  const { regionData } = useRegion();
+  const coverage = regionData?.coverage || [];
+
   return (
     <footer className="footer">
       <div className="footer__inner">
         <div className="footer__brand">
           <div className="footer__brand-name">Best Luxury <span>Transportation</span></div>
           <p className="footer__brand-desc">
-            Servicio exclusivo de transporte de lujo con Cadillac Escalade en Venezuela.
+            Servicio exclusivo de transporte de lujo en {regionData?.label || 'Venezuela'}.
           </p>
         </div>
 
         <div>
           <h4 className="footer__heading">Cobertura</h4>
           <ul className="footer__list">
-            {['Caracas', 'Valencia', 'Maracaibo', 'Margarita', 'Mérida', 'Puerto La Cruz'].map(city => (
+            {coverage.map(city => (
               <li key={city} className="footer__list-item">
                 <MapPin /> {city}
               </li>
@@ -45,11 +49,7 @@ export default function Footer() {
           </p>
           <p className="footer__dev">
             Desarrollado por{' '}
-            <a
-              href="https://wa.me/50768204698?text=Hola%2C%20vengo%20de%20Best%20Luxury%20Transportation%20y%20me%20gustaría%20información."
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="https://wa.me/50768204698?text=Hola%2C%20vengo%20de%20Best%20Luxury%20Transportation" target="_blank" rel="noopener noreferrer">
               AcciosCore
             </a>
           </p>

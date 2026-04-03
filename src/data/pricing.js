@@ -72,23 +72,25 @@ export const DISCOUNTS = {
   7: 0.20,
 };
 
-export function calculatePrice(booking) {
+export function calculatePrice(booking, regionPricing, regionRoutes) {
   const { serviceType, tripType, hours, days, route, extras } = booking;
   if (!serviceType || !tripType) return { base: 0, extrasTotal: 0, discount: 0, total: 0 };
 
+  const prices = regionPricing || BASE_PRICES;
+  const routes = regionRoutes || INTERCITY_ROUTES;
   let base = 0;
 
   if (tripType === 'interurbano' && route) {
-    const r = INTERCITY_ROUTES.find(r => r.id === route);
+    const r = routes.find(r => r.id === route);
     base = r ? r.price[serviceType] : 0;
   } else if (tripType === 'por-horas') {
     const h = Math.max(hours || 4, 4);
-    base = BASE_PRICES['por-horas'][serviceType] * h;
+    base = (prices['por-horas']?.[serviceType] || 35) * h;
   } else if (tripType === 'por-dias') {
     const d = Math.max(days || 1, 1);
-    base = BASE_PRICES['por-dias'][serviceType] * d;
+    base = (prices['por-dias']?.[serviceType] || 200) * d;
   } else if (tripType === 'aeropuerto') {
-    base = BASE_PRICES.aeropuerto[serviceType];
+    base = prices.aeropuerto?.[serviceType] || 80;
   }
 
   const extrasTotal = extras.reduce((sum, e) => {
