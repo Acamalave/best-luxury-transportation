@@ -26,10 +26,6 @@ export default function VehicleShowcase() {
           </p>
         </div>
 
-        <div className="showcase__hero-img">
-          <img src={vehicle?.image || '/escalade-cutout.png'} alt={vehicle?.name} />
-        </div>
-
         <div className="specs-grid">
           {specs.map(({ icon: Icon, label, value }) => (
             <div key={label} className="spec-card">
