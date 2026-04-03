@@ -135,3 +135,44 @@ body {
   color: black !important;
   border-radius: 4px 12px 12px 4px;
 }
+
+/* Compact calendar for hero */
+.rdp-compact .rdp-root {
+  --rdp-cell-size: 36px;
+  font-size: 13px;
+}
+
+.rdp-compact .rdp-month_caption {
+  font-size: 14px;
+  padding: 0 0 8px;
+}
+
+.rdp-compact .rdp-day_button {
+  width: 36px;
+  height: 36px;
+  font-size: 13px;
+  border-radius: 10px;
+}
+
+.rdp-compact .rdp-weekday {
+  font-size: 11px;
+  padding-bottom: 4px;
+}
+
+.rdp-compact .rdp-button_previous,
+.rdp-compact .rdp-button_next {
+  width: 28px;
+  height: 28px;
+}
+
+@media (max-width: 380px) {
+  .rdp-compact .rdp-root {
+    --rdp-cell-size: 32px;
+    font-size: 12px;
+  }
+  .rdp-compact .rdp-day_button {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+}
