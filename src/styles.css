@@ -1494,17 +1494,46 @@ input { font-family: inherit; }
 .rdp-luxury .rdp-button_previous:hover,
 .rdp-luxury .rdp-button_next:hover { background: var(--surface-hover); color: white; }
 
-/* Month + arrows on same line */
-.rdp-luxury .rdp-month_caption,
-.rdp-luxury .rdp-caption {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Calendar layout — arrows + month on same line, full width grid */
+.rdp-luxury .rdp-months {
+  width: 100%;
 }
 
-.rdp-luxury .rdp-nav {
-  position: relative;
-  top: 0;
+.rdp-luxury .rdp-month {
+  width: 100%;
+}
+
+.rdp-luxury .rdp-caption_label {
+  text-transform: capitalize;
+}
+
+/* Force nav (arrows) and caption on same row */
+.rdp-luxury .rdp-month_caption {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+}
+
+.rdp-luxury .rdp-chevron {
+  fill: white;
+}
+
+/* Full width table */
+.rdp-luxury .rdp-month_grid,
+.rdp-luxury table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.rdp-luxury td,
+.rdp-luxury th {
+  text-align: center;
+  padding: 3px 0;
+}
+
+.rdp-luxury .rdp-day_button {
+  margin: 0 auto;
 }
 
 .rdp-luxury .rdp-range_start .rdp-day_button {
@@ -1521,12 +1550,12 @@ input { font-family: inherit; }
 
 /* Compact calendar for hero */
 .rdp-compact .rdp-root {
-  --rdp-cell-size: 38px;
+  --rdp-cell-size: 36px;
   font-size: 13px;
 }
 
-.rdp-compact .rdp-month_caption { font-size: 15px; padding: 0 0 8px; display: flex; align-items: center; justify-content: center; }
-.rdp-compact .rdp-day_button { width: 38px; height: 38px; font-size: 13px; border-radius: 10px; }
+.rdp-compact .rdp-month_caption { font-size: 15px; padding: 0; }
+.rdp-compact .rdp-day_button { width: 36px; height: 36px; font-size: 13px; border-radius: 10px; }
 .rdp-compact .rdp-weekday { font-size: 11px; padding-bottom: 6px; }
 .rdp-compact .rdp-button_previous,
 .rdp-compact .rdp-button_next { width: 30px; height: 30px; }
