@@ -247,10 +247,9 @@ input { font-family: inherit; }
   width: 100%;
   height: auto;
   object-fit: contain;
-  mix-blend-mode: lighten;
-  filter: brightness(0.85) contrast(1.1);
-  mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 50%, transparent 80%);
-  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 50%, transparent 80%);
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6));
+  mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 60%, transparent 90%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 60%, transparent 90%);
 }
 
 /* Hero content — wizard layout */
@@ -1018,6 +1017,24 @@ input { font-family: inherit; }
    VEHICLE SHOWCASE
    ============================================ */
 
+.showcase__hero-img {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.showcase__hero-img img {
+  max-width: 100%;
+  height: auto;
+  max-height: 300px;
+  object-fit: contain;
+  margin: 0 auto;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+}
+
+@media (min-width: 768px) {
+  .showcase__hero-img img { max-height: 400px; }
+}
+
 .showcase__gallery {
   display: flex;
   gap: 16px;
@@ -1352,6 +1369,20 @@ input { font-family: inherit; }
   color: var(--text-dim);
 }
 
+.footer__dev {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 8px;
+}
+
+.footer__dev a {
+  color: var(--gold);
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.footer__dev a:hover { opacity: 0.8; }
+
 /* ============================================
    WHATSAPP FLOATING
    ============================================ */
@@ -1597,7 +1628,9 @@ input { font-family: inherit; }
 .wizard__options {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+  padding-top: 4px;
+  overflow: visible;
 }
 
 .wizard__option-card {
@@ -1605,12 +1638,14 @@ input { font-family: inherit; }
   align-items: flex-start;
   gap: 14px;
   padding: 18px;
+  padding-top: 22px;
   border-radius: var(--r-md);
   border: 1.5px solid var(--border);
   background: var(--surface);
   text-align: left;
   transition: all 0.25s ease;
   position: relative;
+  overflow: visible;
 }
 
 .wizard__option-card:hover {
@@ -1790,3 +1825,94 @@ input { font-family: inherit; }
 }
 
 .wizard__nav-btn--reset:hover { color: var(--text-secondary); }
+
+/* Wizard Form */
+.wizard__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.wizard__form-field label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.wizard__form-field label svg { color: var(--gold); }
+
+.wizard__form-field input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.wizard__form-field input::placeholder { color: var(--text-dim); }
+.wizard__form-field input:focus { border-color: var(--gold-border); }
+
+.wizard__form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.wizard__payment-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: var(--gold-glow);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--r-md);
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.wizard__payment-total strong {
+  font-size: 20px;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+/* Floating price bar */
+.wizard__price-float {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: var(--gold-glow);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--r-md);
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.wizard__price-float strong {
+  color: var(--gold);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.wizard__price-float-discount {
+  background: #4ade80;
+  color: #000;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+}

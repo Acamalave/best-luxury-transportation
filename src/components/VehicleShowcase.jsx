@@ -9,12 +9,6 @@ const specs = [
   { icon: Snowflake, label: 'Clima', value: 'Tri-zona' },
 ];
 
-const images = [
-  '/escalade.jpg',
-  'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80',
-  'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&q=80',
-];
-
 export default function VehicleShowcase() {
   return (
     <section className="section">
@@ -28,12 +22,9 @@ export default function VehicleShowcase() {
           </p>
         </div>
 
-        <div className="showcase__gallery">
-          {images.map((img, i) => (
-            <div key={i} className="showcase__gallery-item">
-              <img src={img} alt={`Escalade ${i + 1}`} />
-            </div>
-          ))}
+        {/* Vehicle image */}
+        <div className="showcase__hero-img">
+          <img src="/escalade-cutout.png" alt="Cadillac Escalade" />
         </div>
 
         <div className="specs-grid">

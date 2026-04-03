@@ -13,7 +13,7 @@ export default function Hero({ bookingState }) {
       {/* Escalade — Real vehicle image */}
       <div className="hero__car-wrapper">
         <motion.img
-          src="/escalade.jpg"
+          src="/escalade-cutout.png"
           alt="Cadillac Escalade"
           className="hero__car-img"
           initial={{ opacity: 0, scale: 1.05 }}

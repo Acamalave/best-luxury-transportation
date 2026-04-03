@@ -32,7 +32,9 @@ export default function Footer() {
               <a href="mailto:info@bestluxury.ve" className="footer__link"><Mail /> info@bestluxury.ve</a>
             </li>
             <li>
-              <a href="#" className="footer__link"><AtSign /> @bestluxuryvzla</a>
+              <a href="https://instagram.com/best_luxury_transportation" target="_blank" rel="noopener noreferrer" className="footer__link">
+                <AtSign /> @best_luxury_transportation
+              </a>
             </li>
           </ul>
         </div>
@@ -40,6 +42,16 @@ export default function Footer() {
         <div className="footer__bottom">
           <p className="footer__copy">
             © {new Date().getFullYear()} Best Luxury Transportation. Todos los derechos reservados.
+          </p>
+          <p className="footer__dev">
+            Desarrollado por{' '}
+            <a
+              href="https://wa.me/50768204698?text=Hola%2C%20vengo%20de%20Best%20Luxury%20Transportation%20y%20me%20gustaría%20información."
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              AcciosCore
+            </a>
           </p>
         </div>
       </div>

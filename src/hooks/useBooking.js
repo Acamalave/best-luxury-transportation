@@ -68,7 +68,7 @@ export function useBooking() {
     });
   }, []);
 
-  const totalSteps = 7;
+  const totalSteps = 8;
 
   const nextStep = useCallback(() => {
     setWizardStep(prev => Math.min(prev + 1, totalSteps - 1));

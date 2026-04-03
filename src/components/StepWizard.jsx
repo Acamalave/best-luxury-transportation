@@ -1,11 +1,12 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DayPicker } from 'react-day-picker';
 import { es } from 'date-fns/locale';
 import { format } from 'date-fns';
 import {
-  Calendar, UserCheck, Car, Plane, Clock, CalendarDays, MapPin,
+  UserCheck, Car, Plane, Clock, CalendarDays, MapPin,
   Wine, Wifi, Shield, Languages, Sparkles, Baby,
-  ChevronLeft, ChevronRight, RotateCcw, Check
+  ChevronLeft, ChevronRight, RotateCcw, Check, CreditCard, User, Phone, Mail
 } from 'lucide-react';
 import { SERVICE_TYPES, TRIP_TYPES, INTERCITY_ROUTES } from '../data/pricing';
 import { LOCATIONS } from '../data/locations';
@@ -29,11 +30,18 @@ const stepAnim = {
   exit: { opacity: 0, x: -40, transition: { duration: 0.2 } },
 };
 
-function buildWhatsAppMessage(booking, price, days) {
+function buildWhatsAppMessage(booking, price, days, contact) {
   const service = SERVICE_TYPES.find(s => s.id === booking.serviceType);
   const trip = TRIP_TYPES.find(t => t.id === booking.tripType);
   const location = LOCATIONS.find(l => l.id === booking.location);
-  let lines = ['🚘 *RESERVA - Best Luxury Transportation*', '', `📋 *Servicio:* ${service?.label}`, `🗺️ *Tipo:* ${trip?.label}`];
+  let lines = [
+    '🚘 *RESERVA - Best Luxury Transportation*', '',
+    `👤 *Cliente:* ${contact.name}`,
+    `📞 *Teléfono:* ${contact.phone}`,
+    `📧 *Email:* ${contact.email}`, '',
+    `📋 *Servicio:* ${service?.label}`,
+    `🗺️ *Tipo:* ${trip?.label}`,
+  ];
   if (booking.tripType === 'interurbano' && booking.route) {
     const route = INTERCITY_ROUTES.find(r => r.id === booking.route);
     lines.push(`📍 *Ruta:* ${route?.from} → ${route?.to}`);
@@ -55,88 +63,103 @@ function buildWhatsAppMessage(booking, price, days) {
   return encodeURIComponent(lines.join('\n'));
 }
 
+// STEP ORDER: 0=Service, 1=Trip, 2=DateTime, 3=Location, 4=Extras, 5=Summary, 6=Contact, 7=Payment
+const TOTAL_STEPS = 8;
+
+const STEP_META = [
+  { title: '¿Cómo prefieres viajar?', desc: 'Elige si deseas un chofer profesional o conducir tú mismo' },
+  { title: '¿Qué tipo de traslado necesitas?', desc: 'Desde aeropuerto hasta viajes entre ciudades' },
+  { title: '¿Cuándo te recogemos?', desc: 'Selecciona fecha, hora y detalles de tu viaje' },
+  { title: '¿Dónde te buscamos?', desc: 'Indica el punto exacto de recogida' },
+  { title: '¿Deseas personalizar tu experiencia?', desc: 'Agrega servicios premium a tu viaje' },
+  { title: 'Resumen de tu reserva', desc: 'Revisa los detalles antes de continuar' },
+  { title: 'Datos de contacto', desc: 'Necesitamos tus datos para confirmar la reserva' },
+  { title: 'Método de pago', desc: 'Ingresa los datos de tu tarjeta para completar' },
+];
+
 export default function StepWizard({ bookingState }) {
-  const { booking, price, days, isComplete, updateBooking, toggleExtra, reset, wizardStep, totalSteps, nextStep, prevStep } = bookingState;
+  const { booking, price, days, updateBooking, toggleExtra, reset, wizardStep, totalSteps: _, nextStep, prevStep, goToStep } = bookingState;
+  const [contact, setContact] = useState({ name: '', phone: '', email: '' });
+  const [card, setCard] = useState({ number: '', expiry: '', cvv: '', holder: '' });
+  const [showPriceBar, setShowPriceBar] = useState(false);
+
+  const step = wizardStep;
+  const meta = STEP_META[step] || STEP_META[0];
 
   const canNext = () => {
-    switch (wizardStep) {
-      case 0: return !!booking.date;
-      case 1: return !!booking.serviceType;
-      case 2: return !!booking.tripType;
-      case 3: {
+    switch (step) {
+      case 0: return !!booking.serviceType;
+      case 1: return !!booking.tripType;
+      case 2: {
         if (booking.tripType === 'interurbano') return !!booking.route;
         if (booking.tripType === 'por-dias') return !!(booking.dateRange.from && booking.dateRange.to);
-        return true; // time is pre-selected
+        return !!booking.date;
       }
-      case 4: {
-        if (booking.tripType === 'interurbano') return true; // no location needed
+      case 3: {
+        if (booking.tripType === 'interurbano') return true;
         return !!booking.location;
       }
-      case 5: return true; // extras are optional
+      case 4: return true;
+      case 5: return true;
+      case 6: return contact.name.length > 1 && contact.phone.length > 5 && contact.email.includes('@');
+      case 7: return card.number.length >= 16 && card.expiry.length >= 4 && card.cvv.length >= 3 && card.holder.length > 2;
       default: return false;
     }
   };
 
-  const stepLabels = [
-    { num: 1, title: '¿Cuándo necesitas el servicio?', desc: 'Selecciona la fecha de tu viaje' },
-    { num: 2, title: '¿Cómo prefieres viajar?', desc: 'Elige si deseas un chofer profesional o conducir tú mismo' },
-    { num: 3, title: '¿Qué tipo de traslado necesitas?', desc: 'Desde aeropuerto hasta viajes entre ciudades' },
-    { num: 4, title: booking.tripType === 'interurbano' ? '¿Cuál es tu ruta?' : '¿A qué hora te recogemos?', desc: booking.tripType === 'interurbano' ? 'Selecciona origen y destino' : 'Elige la hora de recogida y detalles del viaje' },
-    { num: 5, title: '¿Dónde te buscamos?', desc: 'Indica el punto exacto de recogida' },
-    { num: 6, title: '¿Deseas personalizar tu experiencia?', desc: 'Agrega servicios premium a tu viaje' },
-    { num: 7, title: 'Tu reserva está lista', desc: 'Revisa los detalles y confirma por WhatsApp' },
-  ];
+  const handleNext = () => {
+    if (step === 4) setShowPriceBar(true);
+    if (step === 7) {
+      // Fake payment — send WhatsApp
+      const msg = buildWhatsAppMessage(booking, price, days, contact);
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+      return;
+    }
+    nextStep();
+  };
 
-  const current = stepLabels[wizardStep];
+  const handlePrev = () => {
+    if (step === 5) setShowPriceBar(false);
+    prevStep();
+  };
 
-  const handleWhatsApp = () => {
-    const msg = buildWhatsAppMessage(booking, price, days);
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+  const handleReset = () => {
+    setContact({ name: '', phone: '', email: '' });
+    setCard({ number: '', expiry: '', cvv: '', holder: '' });
+    setShowPriceBar(false);
+    reset();
   };
 
   return (
     <div className="wizard">
       {/* Progress */}
       <div className="wizard__progress">
-        {Array.from({ length: totalSteps }).map((_, i) => (
-          <div key={i} className={`wizard__progress-dot ${i <= wizardStep ? 'active' : ''} ${i === wizardStep ? 'current' : ''}`} />
+        {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+          <div key={i} className={`wizard__progress-dot ${i <= step ? 'active' : ''} ${i === step ? 'current' : ''}`} />
         ))}
       </div>
 
-      {/* Step Header */}
+      {/* Header */}
       <div className="wizard__header">
-        <span className="wizard__step-num">Paso {current.num} de {totalSteps}</span>
-        <h2 className="wizard__title">{current.title}</h2>
-        <p className="wizard__desc">{current.desc}</p>
+        <span className="wizard__step-num">Paso {step + 1} de {TOTAL_STEPS}</span>
+        <h2 className="wizard__title">{meta.title}</h2>
+        <p className="wizard__desc">{meta.desc}</p>
       </div>
 
-      {/* Step Content */}
+      {/* Body */}
       <div className="wizard__body">
         <AnimatePresence mode="wait">
-          <motion.div key={wizardStep} {...stepAnim}>
+          <motion.div key={step} {...stepAnim}>
 
-            {/* Step 0: Date */}
-            {wizardStep === 0 && (
-              <div className="booking-card__calendar">
-                <DayPicker
-                  mode="single"
-                  selected={booking.date}
-                  onSelect={(d) => { updateBooking('date', d); if (d) setTimeout(nextStep, 300); }}
-                  locale={es}
-                  disabled={{ before: new Date() }}
-                  className="rdp-luxury rdp-compact"
-                />
-              </div>
-            )}
-
-            {/* Step 1: Service Type */}
-            {wizardStep === 1 && (
+            {/* Step 0: Service Type */}
+            {step === 0 && (
               <div className="wizard__options">
                 {SERVICE_TYPES.map((type) => {
                   const isSelected = booking.serviceType === type.id;
                   const Icon = type.id === 'con-chofer' ? UserCheck : Car;
                   return (
                     <button key={type.id} className={`wizard__option-card ${isSelected ? 'active' : ''}`} onClick={() => { updateBooking('serviceType', type.id); setTimeout(nextStep, 250); }}>
+                      {type.recommended && <span className="wizard__option-badge">Recomendado</span>}
                       <div className="wizard__option-icon"><Icon size={24} /></div>
                       <div className="wizard__option-info">
                         <div className="wizard__option-name">{type.label}</div>
@@ -144,7 +167,6 @@ export default function StepWizard({ bookingState }) {
                           {type.id === 'con-chofer' ? 'Un chofer profesional te lleva a tu destino con total comodidad' : 'Tú conduces la Escalade con total libertad y flexibilidad'}
                         </div>
                       </div>
-                      {type.recommended && <span className="wizard__option-badge">Recomendado</span>}
                       {isSelected && <div className="wizard__option-check"><Check size={16} /></div>}
                     </button>
                   );
@@ -152,8 +174,8 @@ export default function StepWizard({ bookingState }) {
               </div>
             )}
 
-            {/* Step 2: Trip Type */}
-            {wizardStep === 2 && (
+            {/* Step 1: Trip Type */}
+            {step === 1 && (
               <div className="wizard__options">
                 {TRIP_TYPES.map((type) => {
                   const Icon = tripIcons[type.icon];
@@ -178,8 +200,8 @@ export default function StepWizard({ bookingState }) {
               </div>
             )}
 
-            {/* Step 3: Time / Route / DateRange */}
-            {wizardStep === 3 && (
+            {/* Step 2: Date/Time/Route */}
+            {step === 2 && (
               <div>
                 {booking.tripType === 'interurbano' ? (
                   <div>
@@ -196,18 +218,24 @@ export default function StepWizard({ bookingState }) {
                       <DayPicker mode="range" selected={booking.dateRange} onSelect={(range) => updateBooking('dateRange', range || { from: null, to: null })} locale={es} disabled={{ before: new Date() }} numberOfMonths={1} className="rdp-luxury rdp-compact" />
                     </div>
                     {booking.dateRange.from && booking.dateRange.to && (
-                      <div className="date-summary">
-                        <p>{format(booking.dateRange.from, 'dd MMM', { locale: es })} → {format(booking.dateRange.to, 'dd MMM yyyy', { locale: es })}</p>
-                      </div>
+                      <div className="date-summary"><p>{format(booking.dateRange.from, 'dd MMM', { locale: es })} → {format(booking.dateRange.to, 'dd MMM yyyy', { locale: es })} ({days} días)</p></div>
                     )}
                   </div>
                 ) : (
                   <div>
-                    <div className="time-grid">
-                      {TIME_SLOTS.map((slot) => (
-                        <button key={slot} className={`time-btn ${booking.time === slot ? 'active' : ''}`} onClick={() => updateBooking('time', slot)}>{slot}</button>
-                      ))}
+                    <div className="booking-card__calendar">
+                      <DayPicker mode="single" selected={booking.date} onSelect={(d) => updateBooking('date', d)} locale={es} disabled={{ before: new Date() }} className="rdp-luxury rdp-compact" />
                     </div>
+                    {booking.date && (
+                      <div style={{ marginTop: 16 }}>
+                        <p className="wizard__desc" style={{ marginBottom: 10 }}>Hora de recogida</p>
+                        <div className="time-grid">
+                          {TIME_SLOTS.map((slot) => (
+                            <button key={slot} className={`time-btn ${booking.time === slot ? 'active' : ''}`} onClick={() => updateBooking('time', slot)}>{slot}</button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     {booking.tripType === 'por-horas' && (
                       <div className="hours-slider">
                         <div className="hours-slider__header">
@@ -223,13 +251,11 @@ export default function StepWizard({ bookingState }) {
               </div>
             )}
 
-            {/* Step 4: Location */}
-            {wizardStep === 4 && (
+            {/* Step 3: Location */}
+            {step === 3 && (
               <div>
                 {booking.tripType === 'interurbano' ? (
-                  <div className="wizard__skip-msg">
-                    <p>Para viajes interurbanos, la recogida se coordina directamente por WhatsApp.</p>
-                  </div>
+                  <div className="wizard__skip-msg"><p>Para viajes interurbanos, la recogida se coordina directamente.</p></div>
                 ) : (
                   <div className="wizard__locations">
                     {[...new Set(LOCATIONS.map(l => l.category))].map(cat => (
@@ -251,8 +277,8 @@ export default function StepWizard({ bookingState }) {
               </div>
             )}
 
-            {/* Step 5: Extras */}
-            {wizardStep === 5 && (
+            {/* Step 4: Extras */}
+            {step === 4 && (
               <div>
                 {EXTRAS.filter(e => !(e.requiresChofer && booking.serviceType === 'sin-chofer')).map((extra) => {
                   const Icon = extraIcons[extra.icon];
@@ -264,66 +290,76 @@ export default function StepWizard({ bookingState }) {
                         <div className="extra-btn__name">{extra.label}</div>
                         <div className="extra-btn__price">${extra.price}{extra.perDay ? '/día' : ''}</div>
                       </div>
-                      <div className="extra-btn__check">
-                        {isSelected && <Check size={14} color="#000" />}
-                      </div>
+                      <div className="extra-btn__check">{isSelected && <Check size={14} color="#000" />}</div>
                     </button>
                   );
                 })}
               </div>
             )}
 
-            {/* Step 6: Summary */}
-            {wizardStep === 6 && (
+            {/* Step 5: Summary */}
+            {step === 5 && (
               <div className="wizard__summary">
-                <div className="wizard__summary-row">
-                  <span>Servicio</span>
-                  <strong>{SERVICE_TYPES.find(s => s.id === booking.serviceType)?.label}</strong>
-                </div>
-                <div className="wizard__summary-row">
-                  <span>Tipo</span>
-                  <strong>{TRIP_TYPES.find(t => t.id === booking.tripType)?.label}</strong>
-                </div>
-                {booking.date && (
-                  <div className="wizard__summary-row">
-                    <span>Fecha</span>
-                    <strong>{format(booking.date, "d MMM yyyy", { locale: es })}</strong>
-                  </div>
-                )}
+                <div className="wizard__summary-row"><span>Servicio</span><strong>{SERVICE_TYPES.find(s => s.id === booking.serviceType)?.label}</strong></div>
+                <div className="wizard__summary-row"><span>Tipo</span><strong>{TRIP_TYPES.find(t => t.id === booking.tripType)?.label}</strong></div>
+                {booking.date && <div className="wizard__summary-row"><span>Fecha</span><strong>{format(booking.date, "d MMM yyyy", { locale: es })}</strong></div>}
                 {booking.tripType === 'por-dias' && booking.dateRange.from && (
-                  <div className="wizard__summary-row">
-                    <span>Período</span>
-                    <strong>{format(booking.dateRange.from, 'd MMM', { locale: es })} → {booking.dateRange.to && format(booking.dateRange.to, 'd MMM', { locale: es })} ({days}d)</strong>
-                  </div>
+                  <div className="wizard__summary-row"><span>Período</span><strong>{format(booking.dateRange.from, 'd MMM', { locale: es })} → {booking.dateRange.to && format(booking.dateRange.to, 'd MMM', { locale: es })}</strong></div>
                 )}
-                <div className="wizard__summary-row">
-                  <span>Hora</span>
-                  <strong>{booking.time}</strong>
-                </div>
-                {booking.selectedExtras.length > 0 && (
-                  <div className="wizard__summary-row">
-                    <span>Extras</span>
-                    <strong>{booking.selectedExtras.length} seleccionados</strong>
-                  </div>
-                )}
-
+                <div className="wizard__summary-row"><span>Hora</span><strong>{booking.time}</strong></div>
+                {booking.location && <div className="wizard__summary-row"><span>Recogida</span><strong>{LOCATIONS.find(l => l.id === booking.location)?.label}</strong></div>}
+                {booking.selectedExtras.length > 0 && <div className="wizard__summary-row"><span>Extras</span><strong>{booking.selectedExtras.map(e => e.label).join(', ')}</strong></div>}
                 <div className="wizard__summary-total">
-                  <div>
-                    <span className="wizard__summary-total-label">Total estimado</span>
-                    <span className="wizard__summary-total-value">${price.total} <small>USD</small></span>
-                  </div>
-                  {price.discount > 0 && (
-                    <div className="wizard__summary-discount">Descuento {Math.round(price.discountRate * 100)}%: -${price.discount}</div>
-                  )}
+                  <span className="wizard__summary-total-label">Total estimado</span>
+                  <span className="wizard__summary-total-value">${price.total} <small>USD</small></span>
+                  {price.discount > 0 && <div className="wizard__summary-discount">Descuento {Math.round(price.discountRate * 100)}%: -${price.discount}</div>}
                 </div>
+              </div>
+            )}
 
-                <button className="btn btn--whatsapp" onClick={handleWhatsApp} disabled={!isComplete}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-                    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.612.638l4.694-1.387A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.239 0-4.332-.726-6.033-1.96l-.168-.122-3.476 1.027 1.073-3.322-.148-.186A9.935 9.935 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/>
-                  </svg>
-                  {isComplete ? 'Confirmar por WhatsApp' : 'Completa los datos'}
-                </button>
+            {/* Step 6: Contact Form */}
+            {step === 6 && (
+              <div className="wizard__form">
+                <div className="wizard__form-field">
+                  <label><User size={14} /> Nombre completo</label>
+                  <input type="text" placeholder="Tu nombre" value={contact.name} onChange={(e) => setContact(p => ({ ...p, name: e.target.value }))} />
+                </div>
+                <div className="wizard__form-field">
+                  <label><Phone size={14} /> Teléfono</label>
+                  <input type="tel" placeholder="+58 412 000 0000" value={contact.phone} onChange={(e) => setContact(p => ({ ...p, phone: e.target.value }))} />
+                </div>
+                <div className="wizard__form-field">
+                  <label><Mail size={14} /> Correo electrónico</label>
+                  <input type="email" placeholder="tu@email.com" value={contact.email} onChange={(e) => setContact(p => ({ ...p, email: e.target.value }))} />
+                </div>
+              </div>
+            )}
+
+            {/* Step 7: Fake Payment */}
+            {step === 7 && (
+              <div className="wizard__form">
+                <div className="wizard__payment-total">
+                  <span>Total a pagar</span>
+                  <strong>${price.total} USD</strong>
+                </div>
+                <div className="wizard__form-field">
+                  <label><CreditCard size={14} /> Número de tarjeta</label>
+                  <input type="text" placeholder="0000 0000 0000 0000" maxLength={19} value={card.number} onChange={(e) => setCard(p => ({ ...p, number: e.target.value.replace(/[^0-9 ]/g, '') }))} />
+                </div>
+                <div className="wizard__form-row">
+                  <div className="wizard__form-field">
+                    <label>Vencimiento</label>
+                    <input type="text" placeholder="MM/YY" maxLength={5} value={card.expiry} onChange={(e) => setCard(p => ({ ...p, expiry: e.target.value }))} />
+                  </div>
+                  <div className="wizard__form-field">
+                    <label>CVV</label>
+                    <input type="text" placeholder="***" maxLength={4} value={card.cvv} onChange={(e) => setCard(p => ({ ...p, cvv: e.target.value.replace(/[^0-9]/g, '') }))} />
+                  </div>
+                </div>
+                <div className="wizard__form-field">
+                  <label>Nombre del titular</label>
+                  <input type="text" placeholder="Como aparece en la tarjeta" value={card.holder} onChange={(e) => setCard(p => ({ ...p, holder: e.target.value }))} />
+                </div>
               </div>
             )}
 
@@ -331,26 +367,38 @@ export default function StepWizard({ bookingState }) {
         </AnimatePresence>
       </div>
 
+      {/* Floating price bar on extras step */}
+      <AnimatePresence>
+        {(step === 4 || showPriceBar) && step < 5 && price.total > 0 && (
+          <motion.div className="wizard__price-float" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}>
+            <span>Total: <strong>${price.total} USD</strong></span>
+            {price.discount > 0 && <span className="wizard__price-float-discount">-{Math.round(price.discountRate * 100)}%</span>}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Navigation */}
       <div className="wizard__nav">
-        {wizardStep > 0 ? (
-          <button className="wizard__nav-btn wizard__nav-btn--back" onClick={prevStep}>
-            <ChevronLeft size={16} /> Atrás
-          </button>
-        ) : (
-          <div />
-        )}
+        {step > 0 ? (
+          <button className="wizard__nav-btn wizard__nav-btn--back" onClick={handlePrev}><ChevronLeft size={16} /> Atrás</button>
+        ) : <div />}
 
-        {wizardStep < totalSteps - 1 ? (
-          <button className="wizard__nav-btn wizard__nav-btn--next" onClick={nextStep} disabled={!canNext()}>
-            Siguiente <ChevronRight size={16} />
+        {step < TOTAL_STEPS - 1 ? (
+          <button className="wizard__nav-btn wizard__nav-btn--next" onClick={handleNext} disabled={!canNext()}>
+            {step === 5 ? 'Confirmar' : 'Siguiente'} <ChevronRight size={16} />
           </button>
         ) : (
-          <button className="wizard__nav-btn wizard__nav-btn--reset" onClick={reset}>
-            <RotateCcw size={14} /> Nueva reserva
+          <button className="wizard__nav-btn wizard__nav-btn--next" onClick={handleNext} disabled={!canNext()}>
+            <CreditCard size={16} /> Pagar ${price.total}
           </button>
         )}
       </div>
+
+      {step > 0 && (
+        <div style={{ textAlign: 'center', marginTop: 8 }}>
+          <button className="wizard__nav-btn wizard__nav-btn--reset" onClick={handleReset}><RotateCcw size={12} /> Nueva reserva</button>
+        </div>
+      )}
     </div>
   );
 }
