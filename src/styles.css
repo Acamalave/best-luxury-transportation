@@ -1453,10 +1453,26 @@ input { font-family: inherit; }
 .rdp-luxury .rdp-disabled .rdp-day_button { color: var(--text-dim); }
 
 .rdp-luxury .rdp-caption_label,
-.rdp-luxury .rdp-month_caption { color: var(--text); font-weight: 600; }
+.rdp-luxury .rdp-month_caption {
+  color: white;
+  font-weight: 600;
+  text-align: center;
+  width: 100%;
+  text-transform: capitalize;
+}
+
+.rdp-luxury .rdp-months { justify-content: center; }
+.rdp-luxury .rdp-month { width: 100%; }
+
+.rdp-luxury .rdp-nav {
+  display: flex;
+  justify-content: space-between;
+}
 
 .rdp-luxury .rdp-weekday,
-.rdp-luxury .rdp-head_cell { color: var(--text-muted); font-size: 12px; }
+.rdp-luxury .rdp-head_cell { color: white; font-size: 12px; font-weight: 500; }
+
+.rdp-luxury .rdp-day_button { color: white; }
 
 .rdp-luxury .rdp-nav button,
 .rdp-luxury .rdp-button_previous,
@@ -1537,13 +1553,13 @@ input { font-family: inherit; }
    ============================================ */
 
 .wizard {
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
+  background: rgba(15,15,15,0.92);
+  backdrop-filter: blur(80px) saturate(1.2);
+  -webkit-backdrop-filter: blur(80px) saturate(1.2);
   border-radius: var(--r-xl);
   border: 1px solid var(--border);
   padding: 24px;
-  box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+  box-shadow: 0 24px 48px rgba(0,0,0,0.6);
   display: flex;
   flex-direction: column;
   min-height: 420px;
@@ -1616,6 +1632,7 @@ input { font-family: inherit; }
 .wizard__body {
   flex: 1;
   overflow-y: auto;
+  overflow-x: visible;
   margin-bottom: 20px;
   -ms-overflow-style: none;
   scrollbar-width: thin;
@@ -1629,7 +1646,7 @@ input { font-family: inherit; }
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding-top: 4px;
+  padding-top: 10px;
   overflow: visible;
 }
 
@@ -1640,8 +1657,8 @@ input { font-family: inherit; }
   padding: 18px;
   padding-top: 22px;
   border-radius: var(--r-md);
-  border: 1.5px solid var(--border);
-  background: var(--surface);
+  border: 1.5px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.06);
   text-align: left;
   transition: all 0.25s ease;
   position: relative;
@@ -1862,6 +1879,10 @@ input { font-family: inherit; }
 .wizard__form-field input::placeholder { color: var(--text-dim); }
 .wizard__form-field input:focus { border-color: var(--gold-border); }
 
+.wizard__form-field input[type="time"] {
+  color-scheme: dark;
+}
+
 .wizard__form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1887,32 +1908,63 @@ input { font-family: inherit; }
   font-weight: 700;
 }
 
-/* Floating price bar */
-.wizard__price-float {
+/* Checkout bottom bar */
+.wizard__checkout-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  background: rgba(10,10,10,0.95);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-top: 1px solid var(--gold-border);
+  padding: 16px 20px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 12px 20px;
-  background: var(--gold-glow);
-  border: 1px solid var(--gold-border);
-  border-radius: var(--r-md);
-  margin-bottom: 16px;
-  font-size: 14px;
-  color: var(--text-secondary);
+  justify-content: space-between;
 }
 
-.wizard__price-float strong {
+.wizard__checkout-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.wizard__checkout-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+.wizard__checkout-total {
+  font-size: 24px;
+  font-weight: 700;
   color: var(--gold);
-  font-weight: 700;
-  font-size: 18px;
 }
 
-.wizard__price-float-discount {
-  background: #4ade80;
-  color: #000;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: var(--r-full);
+.wizard__checkout-total small {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
 }
+
+.wizard__checkout-discount {
+  font-size: 11px;
+  color: #4ade80;
+  margin-top: 2px;
+}
+
+.wizard__checkout-btn {
+  background: var(--gold);
+  color: #000;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: var(--r-md);
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.wizard__checkout-btn:hover { background: var(--gold-dark); }

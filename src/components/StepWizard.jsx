@@ -17,13 +17,6 @@ const extraIcons = { wine: Wine, wifi: Wifi, shield: Shield, languages: Language
 
 const WHATSAPP_NUMBER = '584121234567';
 
-const TIME_SLOTS = [];
-for (let h = 5; h <= 22; h++) {
-  for (let m = 0; m < 60; m += 30) {
-    TIME_SLOTS.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
-  }
-}
-
 const stepAnim = {
   initial: { opacity: 0, x: 40 },
   animate: { opacity: 1, x: 0, transition: { duration: 0.3, ease: 'easeOut' } },
@@ -81,7 +74,6 @@ export default function StepWizard({ bookingState }) {
   const { booking, price, days, updateBooking, toggleExtra, reset, wizardStep, totalSteps: _, nextStep, prevStep, goToStep } = bookingState;
   const [contact, setContact] = useState({ name: '', phone: '', email: '' });
   const [card, setCard] = useState({ number: '', expiry: '', cvv: '', holder: '' });
-  const [showPriceBar, setShowPriceBar] = useState(false);
 
   const step = wizardStep;
   const meta = STEP_META[step] || STEP_META[0];
@@ -108,7 +100,6 @@ export default function StepWizard({ bookingState }) {
   };
 
   const handleNext = () => {
-    if (step === 4) setShowPriceBar(true);
     if (step === 7) {
       // Fake payment — send WhatsApp
       const msg = buildWhatsAppMessage(booking, price, days, contact);
@@ -119,14 +110,12 @@ export default function StepWizard({ bookingState }) {
   };
 
   const handlePrev = () => {
-    if (step === 5) setShowPriceBar(false);
     prevStep();
   };
 
   const handleReset = () => {
     setContact({ name: '', phone: '', email: '' });
     setCard({ number: '', expiry: '', cvv: '', holder: '' });
-    setShowPriceBar(false);
     reset();
   };
 
@@ -227,13 +216,9 @@ export default function StepWizard({ bookingState }) {
                       <DayPicker mode="single" selected={booking.date} onSelect={(d) => updateBooking('date', d)} locale={es} disabled={{ before: new Date() }} className="rdp-luxury rdp-compact" />
                     </div>
                     {booking.date && (
-                      <div style={{ marginTop: 16 }}>
-                        <p className="wizard__desc" style={{ marginBottom: 10 }}>Hora de recogida</p>
-                        <div className="time-grid">
-                          {TIME_SLOTS.map((slot) => (
-                            <button key={slot} className={`time-btn ${booking.time === slot ? 'active' : ''}`} onClick={() => updateBooking('time', slot)}>{slot}</button>
-                          ))}
-                        </div>
+                      <div className="wizard__form-field" style={{ marginTop: 16 }}>
+                        <label><Clock size={14} /> Hora de recogida</label>
+                        <input type="time" value={booking.time} onChange={(e) => updateBooking('time', e.target.value)} />
                       </div>
                     )}
                     {booking.tripType === 'por-horas' && (
@@ -367,12 +352,18 @@ export default function StepWizard({ bookingState }) {
         </AnimatePresence>
       </div>
 
-      {/* Floating price bar on extras step */}
+      {/* Checkout bottom bar — visible on extras step */}
       <AnimatePresence>
-        {(step === 4 || showPriceBar) && step < 5 && price.total > 0 && (
-          <motion.div className="wizard__price-float" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}>
-            <span>Total: <strong>${price.total} USD</strong></span>
-            {price.discount > 0 && <span className="wizard__price-float-discount">-{Math.round(price.discountRate * 100)}%</span>}
+        {step >= 4 && step <= 5 && price.total > 0 && (
+          <motion.div className="wizard__checkout-bar" initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 40 }} transition={{ type: 'spring', damping: 25 }}>
+            <div className="wizard__checkout-info">
+              <span className="wizard__checkout-label">Total estimado</span>
+              <span className="wizard__checkout-total">${price.total} <small>USD</small></span>
+              {price.discount > 0 && <span className="wizard__checkout-discount">-{Math.round(price.discountRate * 100)}% descuento</span>}
+            </div>
+            <button className="wizard__checkout-btn" onClick={handleNext}>
+              {step === 5 ? 'Confirmar' : 'Continuar'}
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
