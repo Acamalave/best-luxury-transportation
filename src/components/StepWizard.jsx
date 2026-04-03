@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DayPicker } from 'react-day-picker';
 import { es } from 'date-fns/locale';
@@ -79,12 +79,6 @@ export default function StepWizard({ bookingState }) {
   const LOCATIONS = regionData?.locations || [];
   const INTERCITY_ROUTES = regionData?.intercityRoutes || [];
   const WHATSAPP_NUMBER_REGION = regionData?.whatsapp || WHATSAPP_NUMBER;
-  const wizardRef = useRef(null);
-
-  useEffect(() => {
-    wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, [step]);
-
   const step = wizardStep;
   const meta = STEP_META[step] || STEP_META[0];
 
@@ -109,6 +103,12 @@ export default function StepWizard({ bookingState }) {
     }
   };
 
+  const scrollToWizard = () => {
+    setTimeout(() => {
+      document.getElementById('wizard-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
   const handleNext = () => {
     if (step === 7) {
       // Fake payment — send WhatsApp
@@ -117,10 +117,12 @@ export default function StepWizard({ bookingState }) {
       return;
     }
     nextStep();
+    scrollToWizard();
   };
 
   const handlePrev = () => {
     prevStep();
+    scrollToWizard();
   };
 
   const handleReset = () => {
@@ -130,7 +132,7 @@ export default function StepWizard({ bookingState }) {
   };
 
   return (
-    <div className="wizard" ref={wizardRef}>
+    <div className="wizard" id="wizard-card">
       {/* Progress */}
       <div className="wizard__progress">
         {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
@@ -157,7 +159,7 @@ export default function StepWizard({ bookingState }) {
                   const isSelected = booking.serviceType === type.id;
                   const Icon = type.id === 'con-chofer' ? UserCheck : Car;
                   return (
-                    <button key={type.id} className={`wizard__option-card ${isSelected ? 'active' : ''}`} onClick={() => { updateBooking('serviceType', type.id); setTimeout(nextStep, 250); }}>
+                    <button key={type.id} className={`wizard__option-card ${isSelected ? 'active' : ''}`} onClick={() => { updateBooking('serviceType', type.id); setTimeout(() => { nextStep(); scrollToWizard(); }, 250); }}>
                       {type.recommended && <span className="wizard__option-badge">Recomendado</span>}
                       <div className="wizard__option-icon"><Icon size={24} /></div>
                       <div className="wizard__option-info">
@@ -186,7 +188,7 @@ export default function StepWizard({ bookingState }) {
                     'interurbano': 'Viaja cómodamente entre ciudades de Venezuela',
                   };
                   return (
-                    <button key={type.id} className={`wizard__option-card ${isSelected ? 'active' : ''}`} onClick={() => { updateBooking('tripType', type.id); setTimeout(nextStep, 250); }}>
+                    <button key={type.id} className={`wizard__option-card ${isSelected ? 'active' : ''}`} onClick={() => { updateBooking('tripType', type.id); setTimeout(() => { nextStep(); scrollToWizard(); }, 250); }}>
                       <div className="wizard__option-icon"><Icon size={22} /></div>
                       <div className="wizard__option-info">
                         <div className="wizard__option-name">{type.label}</div>
