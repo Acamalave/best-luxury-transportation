@@ -10,7 +10,7 @@ const specs = [
 ];
 
 const images = [
-  'https://images.unsplash.com/photo-1612544448445-b8232cff3b6c?w=800&q=80',
+  '/escalade.jpg',
   'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80',
   'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&q=80',
 ];
@@ -21,7 +21,7 @@ export default function VehicleShowcase() {
       <div className="container">
         <div className="section__header">
           <h2 className="section__title">
-            Cadillac Escalade <span className="gold">2016</span>
+            Cadillac <span className="gold">Escalade</span>
           </h2>
           <p className="section__subtitle">
             El ícono del lujo americano. Presencia imponente, confort insuperable.

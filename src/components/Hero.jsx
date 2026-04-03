@@ -10,11 +10,11 @@ export default function Hero({ bookingState }) {
         <div className="hero__bg-overlay" />
       </div>
 
-      {/* Escalade — Prominent center image */}
+      {/* Escalade — Real vehicle image */}
       <div className="hero__car-wrapper">
         <motion.img
-          src="https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?w=1400&q=80"
-          alt="Cadillac Escalade Negra"
+          src="/escalade.jpg"
+          alt="Cadillac Escalade"
           className="hero__car-img"
           initial={{ opacity: 0, scale: 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
