@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Fuel, Users, Volume2, Shield, Gauge, Snowflake } from 'lucide-react';
 
 const specs = [
@@ -18,56 +17,58 @@ const images = [
 
 export default function VehicleShowcase() {
   return (
-    <section className="py-12 sm:py-20 px-4">
+    <section className="py-16 sm:py-24 px-5 sm:px-6">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-2xl sm:text-4xl font-bold text-white">
+
+        {/* Section header */}
+        <div className="text-center mb-10 sm:mb-14">
+          <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">
             Cadillac Escalade <span className="text-[#C9A84C]">2016</span>
           </h2>
-          <p className="mt-2 text-sm sm:text-base text-white/40 max-w-lg mx-auto">
+          <p className="mt-3 text-sm sm:text-base text-white/40 max-w-md mx-auto leading-relaxed">
             El ícono del lujo americano. Presencia imponente, confort insuperable.
           </p>
         </div>
 
         {/* Image gallery */}
-        <div className="flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
+        <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-5 px-5 sm:-mx-6 sm:px-6">
           {images.map((img, i) => (
             <div
               key={i}
-              className="flex-shrink-0 w-64 sm:w-80 snap-center"
+              className="flex-shrink-0 w-[280px] sm:w-80 snap-center"
             >
               <img
                 src={img}
                 alt={`Escalade ${i + 1}`}
-                className="w-full h-40 sm:h-56 object-cover rounded-xl sm:rounded-2xl"
+                className="w-full h-44 sm:h-56 object-cover rounded-2xl"
               />
             </div>
           ))}
         </div>
 
         {/* Specs grid */}
-        <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-6 sm:mt-10">
+        <div className="grid grid-cols-3 gap-3 sm:gap-4 mt-10 sm:mt-14">
           {specs.map(({ icon: Icon, label, value }) => (
             <div
               key={label}
-              className="bg-white/[0.03] border border-white/[0.05] rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center"
+              className="bg-white/[0.03] border border-white/[0.05] rounded-2xl p-4 sm:p-5 text-center"
             >
-              <Icon className="w-4 h-4 sm:w-6 sm:h-6 text-[#C9A84C] mx-auto mb-1.5" />
+              <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#C9A84C] mx-auto mb-2.5" />
               <div className="text-white font-semibold text-xs sm:text-sm">{value}</div>
-              <div className="text-white/30 text-[10px] sm:text-xs mt-0.5">{label}</div>
+              <div className="text-white/30 text-[10px] sm:text-xs mt-1">{label}</div>
             </div>
           ))}
         </div>
 
         {/* Trust badges */}
-        <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-6 sm:mt-10">
+        <div className="flex flex-wrap justify-center gap-3 mt-10 sm:mt-12">
           {['Mantenimiento certificado', 'Vehículos impecables', 'Seguro incluido'].map((badge) => (
             <div
               key={badge}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#C9A84C]/8 border border-[#C9A84C]/15"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#C9A84C]/[0.07] border border-[#C9A84C]/15"
             >
-              <Shield className="w-3 h-3 text-[#C9A84C]" />
-              <span className="text-[10px] sm:text-xs text-[#C9A84C]/80 font-medium">{badge}</span>
+              <Shield className="w-3.5 h-3.5 text-[#C9A84C]" />
+              <span className="text-[11px] sm:text-xs text-[#C9A84C]/80 font-medium">{badge}</span>
             </div>
           ))}
         </div>

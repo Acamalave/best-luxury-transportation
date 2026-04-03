@@ -18,12 +18,12 @@ export default function BookingConfigurator({ bookingState }) {
   const showConfigurator = booking.serviceType || booking.date;
 
   return (
-    <section id="booking" className="relative py-10 sm:py-16 px-4">
+    <section id="booking" className="relative py-14 sm:py-20 px-5 sm:px-6">
       <div className="max-w-5xl mx-auto">
 
         {/* Progress bar */}
         {showConfigurator && (
-          <div className="flex gap-1 mb-6 max-w-lg mx-auto lg:mx-0 lg:max-w-none">
+          <div className="flex gap-1.5 mb-8 max-w-lg mx-auto lg:mx-0 lg:max-w-none">
             {[1, 2, 3, 4, 5].map(step => (
               <div
                 key={step}
@@ -37,7 +37,7 @@ export default function BookingConfigurator({ bookingState }) {
 
         <div className="lg:grid lg:grid-cols-5 lg:gap-8">
           {/* Configurator steps */}
-          <div className="lg:col-span-3 space-y-4">
+          <div className="lg:col-span-3 space-y-5">
 
             {/* Trip Type — shows after service type selected */}
             <AnimatePresence>
@@ -48,7 +48,7 @@ export default function BookingConfigurator({ bookingState }) {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="bg-white/[0.03] rounded-2xl p-4 sm:p-5 border border-white/[0.05]"
+                  className="bg-white/[0.03] rounded-2xl p-5 sm:p-6 border border-white/[0.05]"
                 >
                   <TripTypeSelector
                     selected={booking.tripType}
@@ -67,7 +67,7 @@ export default function BookingConfigurator({ bookingState }) {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="bg-white/[0.03] rounded-2xl p-4 sm:p-5 border border-white/[0.05]"
+                  className="bg-white/[0.03] rounded-2xl p-5 sm:p-6 border border-white/[0.05]"
                 >
                   <DateTimePicker booking={booking} updateBooking={updateBooking} />
                 </motion.div>
@@ -86,7 +86,7 @@ export default function BookingConfigurator({ bookingState }) {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="bg-white/[0.03] rounded-2xl p-4 sm:p-5 border border-white/[0.05]"
+                  className="bg-white/[0.03] rounded-2xl p-5 sm:p-6 border border-white/[0.05]"
                 >
                   <LocationPicker booking={booking} updateBooking={updateBooking} />
                 </motion.div>
@@ -102,7 +102,7 @@ export default function BookingConfigurator({ bookingState }) {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="bg-white/[0.03] rounded-2xl p-4 sm:p-5 border border-white/[0.05]"
+                  className="bg-white/[0.03] rounded-2xl p-5 sm:p-6 border border-white/[0.05]"
                 >
                   <ExtrasSelector booking={booking} toggleExtra={toggleExtra} />
                 </motion.div>
