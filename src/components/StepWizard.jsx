@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DayPicker } from 'react-day-picker';
 import { es } from 'date-fns/locale';
@@ -79,6 +79,11 @@ export default function StepWizard({ bookingState }) {
   const LOCATIONS = regionData?.locations || [];
   const INTERCITY_ROUTES = regionData?.intercityRoutes || [];
   const WHATSAPP_NUMBER_REGION = regionData?.whatsapp || WHATSAPP_NUMBER;
+  const wizardRef = useRef(null);
+
+  useEffect(() => {
+    wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [step]);
 
   const step = wizardStep;
   const meta = STEP_META[step] || STEP_META[0];
@@ -125,7 +130,7 @@ export default function StepWizard({ bookingState }) {
   };
 
   return (
-    <div className="wizard">
+    <div className="wizard" ref={wizardRef}>
       {/* Progress */}
       <div className="wizard__progress">
         {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
