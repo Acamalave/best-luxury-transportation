@@ -17,6 +17,7 @@ const initialState = {
 
 export function useBooking() {
   const [booking, setBooking] = useState(initialState);
+  const [wizardStep, setWizardStep] = useState(0); // 0-indexed wizard step
 
   const days = useMemo(() => {
     if (booking.tripType === 'por-dias' && booking.dateRange.from && booking.dateRange.to) {
@@ -67,17 +68,24 @@ export function useBooking() {
     });
   }, []);
 
-  const reset = useCallback(() => setBooking(initialState), []);
+  const totalSteps = 7;
 
-  const currentStep = useMemo(() => {
-    if (!booking.serviceType) return 1;
-    if (!booking.tripType) return 2;
-    if (booking.tripType === 'por-dias' && (!booking.dateRange.from || !booking.dateRange.to)) return 3;
-    if (booking.tripType !== 'por-dias' && booking.tripType !== 'interurbano' && !booking.date) return 3;
-    if (booking.tripType === 'interurbano' && !booking.route) return 3;
-    if (!booking.location && booking.tripType !== 'interurbano') return 4;
-    return 5;
-  }, [booking]);
+  const nextStep = useCallback(() => {
+    setWizardStep(prev => Math.min(prev + 1, totalSteps - 1));
+  }, []);
+
+  const prevStep = useCallback(() => {
+    setWizardStep(prev => Math.max(prev - 1, 0));
+  }, []);
+
+  const goToStep = useCallback((step) => {
+    setWizardStep(step);
+  }, []);
+
+  const reset = useCallback(() => {
+    setBooking(initialState);
+    setWizardStep(0);
+  }, []);
 
   const isComplete = useMemo(() => {
     if (!booking.serviceType || !booking.tripType) return false;
@@ -88,5 +96,9 @@ export function useBooking() {
     return true;
   }, [booking]);
 
-  return { booking, price, days, currentStep, isComplete, updateBooking, toggleExtra, reset };
+  return {
+    booking, price, days, isComplete,
+    updateBooking, toggleExtra, reset,
+    wizardStep, totalSteps, nextStep, prevStep, goToStep,
+  };
 }

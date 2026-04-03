@@ -1,5 +1,4 @@
 import Hero from './components/Hero';
-import BookingConfigurator from './components/BookingConfigurator';
 import VehicleShowcase from './components/VehicleShowcase';
 import WhyChooseUs from './components/WhyChooseUs';
 import Footer from './components/Footer';
@@ -12,7 +11,6 @@ function App() {
   return (
     <div className="app">
       <Hero bookingState={bookingState} />
-      <BookingConfigurator bookingState={bookingState} />
       <hr className="section-divider" />
       <VehicleShowcase />
       <hr className="section-divider" />
